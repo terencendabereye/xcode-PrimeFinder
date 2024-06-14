@@ -111,6 +111,8 @@ class PrimeResults {
         self.last = primes.suffix(5)
         self.count = primes.count
         
+        finishedPrimes(found: self.count)
+        
     }
     
     func isPrime(_ n: Int) -> Bool {
@@ -135,4 +137,25 @@ enum PrimeFinderMethod: String, CaseIterable {
     case bruteForce
     case sieve
     case random
+}
+
+
+import UserNotifications
+func finishedPrimes(found primes: Int) {
+    let center = UNUserNotificationCenter.current()
+    center.requestAuthorization(options: [.alert, .badge], completionHandler: {granted, error in
+        if error != nil {
+            print(error as Any)
+        } else if granted {
+            let content = UNMutableNotificationContent()
+            content.title = "Primefinder done!"
+            content.body = "I have found \(primes) primes"
+            content.sound = .default
+            //    content.badge = .init(integerLiteral: primes)
+            content.badge = .init(integerLiteral: 1)
+            
+            let request = UNNotificationRequest.init(identifier: UUID().uuidString, content: content, trigger: nil)
+            center.add(request)
+        }
+    })
 }

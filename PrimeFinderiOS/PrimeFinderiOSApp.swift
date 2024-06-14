@@ -11,6 +11,13 @@ import SwiftData
 @main
 struct PrimeFinderiOSApp: App {
     var body: some Scene {
+        
+        #if os(macOS)
+        MenuBarExtra("My menu bar"){
+            Text("sda")
+        }
+        #endif
+        
         WindowGroup {
             ContentView()
 //                .modelContainer(for: [DownloadTask.self])

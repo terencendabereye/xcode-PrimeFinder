@@ -74,6 +74,7 @@ struct NewDownloadView: View {
     @State var source: URL?
     @State var name: String = ""
     @State var resumable: Bool = true
+    @State var allowBackground: Bool = true
     @State var sourceString: String = ""
     @FocusState var focusField: FocuseField?
     
@@ -106,6 +107,7 @@ struct NewDownloadView: View {
                         }
                     
                     Toggle("Resumable", isOn: $resumable)
+                    Toggle("Background", isOn: $allowBackground)
                     Button("Confirm", action: handleNewDownload)
                         .buttonStyle(PlainButtonStyle())
                         .foregroundStyle(.tint)
@@ -140,6 +142,9 @@ struct NewDownloadView: View {
             sourceString = "https://" + sourceString
         }
         
+        if sourceString.hasSuffix("/"){
+            sourceString.removeLast()
+        }
         
         guard let source = URL(string: sourceString) else {
             print("Failed to make URL from \(sourceString)")
@@ -211,10 +216,19 @@ struct DownloadItemView: View {
                             showAlert.toggle()
                         }
                 default:
-                    Image(systemName: "ellipsis")
-                        .symbolRenderingMode(.monochrome)
-                        .scaledToFill()
-                        .contentTransition(.symbolEffect(.replace.byLayer.downUp))
+                    if #available(iOS 18.0, *) {
+                        Image(systemName: "ellipsis")
+                            .symbolRenderingMode(.monochrome)
+                            .scaledToFill()
+                            .contentTransition(.symbolEffect(.replace.byLayer.downUp))
+                            .symbolEffect(.wiggle.up, options: .speed(0.5).repeat(.periodic(delay: 0.4)))
+                    } else {
+                        Image(systemName: "ellipsis")
+                            .symbolRenderingMode(.monochrome)
+                            .scaledToFill()
+                            .contentTransition(.symbolEffect(.replace.byLayer.downUp))
+                            .symbolEffect(.variableColor.reversing.iterative, options: .speed(0.5))
+                    }
                 }
             })
             .gaugeStyle(.accessoryCircularCapacity)
@@ -266,6 +280,9 @@ struct DownloadItemView: View {
                 case .failed:
                     Image(systemName: "arrow.circlepath")
                         .font(.title)
+                default:
+                    Image(systemName: "arrow.down.circle.fill")
+                        .font(.title)
                 }
             })
             .buttonStyle(PlainButtonStyle())
@@ -274,7 +291,9 @@ struct DownloadItemView: View {
                 if newValue == .background && download.state == .downloading {
                     // app entering background
                     // prevent background downloads
-                    download.pause()
+                    if !download.allowBackground{
+                        download.pause()
+                    }
                 }
             }
             
@@ -322,6 +341,7 @@ struct EditDownloadItemView: View {
             Section{
                 TextField("Name", text: $download.name)
                 Toggle("Resumable", isOn: $download.resumable)
+                Toggle("Background", isOn: $download.allowBackground )
                 Button(action: {
                     if let url = download.savedURL {
                         print(url)
@@ -352,6 +372,9 @@ struct EditDownloadItemView: View {
                     case .failed:
                         Image(systemName: "arrow.circlepath")
                             .font(.title)
+                    case .waiting:
+                        Image(systemName: "arrow.down.circle.fill")
+                            .font(.title)
                     }
                 })
             }
@@ -362,6 +385,14 @@ struct EditDownloadItemView: View {
                 ProgressView(value: currentBytes, total: Double(bytesExpected)) {
                     Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
                 }
+                
+                LabeledContent("Debug Error") {
+                    VStack {
+//                        Text(download.error?.localizedDescription ?? "nil")
+                        Text(download.downloadTask?.error.debugDescription ?? " nil" )
+                    }
+                }
+                
             }
             
         }

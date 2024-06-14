@@ -8,7 +8,8 @@
 import Foundation
 import SwiftUI
 import SwiftData
-import CoreData
+import UserNotifications
+
 
 class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
     let downloadTask: DownloadTask
@@ -17,11 +18,34 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
         self.downloadTask = downloadTask
     }
     
+    enum GenericError: Error {
+        case GenericError
+    }
+    
+    func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
+        self.downloadTask.state = .waiting
+    }
+    
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: (any Error)?) {
+        let _timeoutError  = NSURLErrorTimedOut
+        let cancelError = NSURLErrorCancelled
+        
+        self.downloadTask.setError(error)
+    }
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         DispatchQueue.main.async {
-            self.downloadTask.progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-//            self.progress = downloadTask.progress.fractionCompleted
+            let oldProgress = self.downloadTask.progress
+            let newProgress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+            
+            self.downloadTask.progress = newProgress
+            
+            if newProgress-oldProgress >= 0.1 {
+                self.downloadTask.progressDidChangeSignificantly()
+            }
+            
         }
+        
     }
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         //MARK: Save
@@ -37,7 +61,7 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
 
         do {
             guard let suggestedFilename = downloadTask.response?.suggestedFilename else {return}
-            var dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: self.downloadTask.savedURL, create: false)
+            let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: self.downloadTask.savedURL, create: false)
             self.downloadTask.savedURL = dir.appending(component: suggestedFilename)
             guard let savedURL = self.downloadTask.savedURL else {return}
             try moveFileWithUniqueName(at: location, to: savedURL)
@@ -45,6 +69,9 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
             self.downloadTask.setError(error)
             return
         }
+        
+        
+        self.downloadTask.downloadDidFinish()
 
     }
     
@@ -78,6 +105,7 @@ class DownloadTask:Identifiable {
         case finished
         case cancelled
         case failed
+        case waiting
     }
     
     var id = UUID()
@@ -87,6 +115,7 @@ class DownloadTask:Identifiable {
     @Transient
     var error: (any Error)?
     var resumable: Bool = false
+    var allowBackground: Bool = true
     var progress: Double = 0
     var busy: Bool = false
     var state: DownloadState = DownloadState.notStarted
@@ -118,9 +147,11 @@ class DownloadTask:Identifiable {
         self.urlSession = urlSession
     }
     
-    func setError(_ error: any Error) {
-        print(error)
-        self.error = error
+    func setError(_ error: (any Error)?) {
+        if let error = error {
+            print(error)
+            self.error = error
+        }
         self.state = .failed
     }
     
@@ -132,6 +163,24 @@ class DownloadTask:Identifiable {
             print(error)
             return
         }
+    }
+    
+    func downloadDidFinish() {
+        //send notification
+        let content = UNMutableNotificationContent()
+        content.title = "Download Complete"
+        let name = self.name
+        content.body = "The download \"\(name)\" has finished"
+        content.sound = .default
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
+        
+    }
+    
+    /// **HAS BEEN REMOVED**
+    func progressDidChangeSignificantly() {
+        // update live activity
     }
 
     
@@ -179,10 +228,14 @@ class DownloadTask:Identifiable {
             self.busy = true
             self.state = .downloading
             downloadTask.resume()
+            requestLiveActivity()
         }
 //        self.downloadTask = downloadTask
     }
+    /// **Live activities removed**
+    func requestLiveActivity() {
+        // begin live activity
+    }
    
 }
-
 

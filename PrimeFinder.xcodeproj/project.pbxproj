@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5264488B2C0B94FC00AB53CC /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 526448892C0B94FC00AB53CC /* Model.xcdatamodeld */; };
 		5267AF652C091BC8006318FD /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5267AF642C091BC8006318FD /* DownloadModel.swift */; };
 		526A972C2C065CF300130496 /* PrimeFinderiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526A972B2C065CF300130496 /* PrimeFinderiOSApp.swift */; };
 		526A97302C065CF700130496 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 526A972F2C065CF700130496 /* Assets.xcassets */; };
@@ -16,19 +15,30 @@
 		526A97382C065D2100130496 /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526A97232C050F3400130496 /* DownloadView.swift */; };
 		526A97392C065D2100130496 /* PrimesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52375F022BFA810300BE2693 /* PrimesView.swift */; };
 		526A973A2C065E3300130496 /* PrimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52375F042BFA812700BE2693 /* PrimeModel.swift */; };
-		52EAABC02C1069D0003967CC /* MyNotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EAABBF2C1069D0003967CC /* MyNotesApp.swift */; };
-		52EAABC22C1069D0003967CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EAABC12C1069D0003967CC /* ContentView.swift */; };
-		52EAABC42C1069D0003967CC /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EAABC32C1069D0003967CC /* Item.swift */; };
-		52EAABC62C1069D4003967CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52EAABC52C1069D4003967CC /* Assets.xcassets */; };
-		52EAABC92C1069D4003967CC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52EAABC82C1069D4003967CC /* Preview Assets.xcassets */; };
+		52811B7C2C1ADEBF0054CB01 /* MacDownloaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52811B7B2C1ADEBF0054CB01 /* MacDownloaderApp.swift */; };
+		52811B7E2C1ADEBF0054CB01 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52811B7D2C1ADEBF0054CB01 /* ContentView.swift */; };
+		52811B832C1ADEC10054CB01 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52811B822C1ADEC10054CB01 /* Preview Assets.xcassets */; };
+		52811B882C1B4BD00054CB01 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 526A972F2C065CF700130496 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		52D4CA442C14F42400BE37C3 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		52375EF52BFA80CE00BE2693 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		52375F022BFA810300BE2693 /* PrimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimesView.swift; sourceTree = "<group>"; };
 		52375F042BFA812700BE2693 /* PrimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimeModel.swift; sourceTree = "<group>"; };
 		52572A7D2C07C12C0002D16C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		5264488A2C0B94FC00AB53CC /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		5267AF632C091871006318FD /* PrimeFinderiOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimeFinderiOS.entitlements; sourceTree = "<group>"; };
 		5267AF642C091BC8006318FD /* DownloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadModel.swift; sourceTree = "<group>"; };
 		526A97232C050F3400130496 /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
@@ -36,13 +46,13 @@
 		526A972B2C065CF300130496 /* PrimeFinderiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimeFinderiOSApp.swift; sourceTree = "<group>"; };
 		526A972F2C065CF700130496 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		526A97322C065CF700130496 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		52EAABBD2C1069D0003967CC /* MyNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		52EAABBF2C1069D0003967CC /* MyNotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNotesApp.swift; sourceTree = "<group>"; };
-		52EAABC12C1069D0003967CC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		52EAABC32C1069D0003967CC /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
-		52EAABC52C1069D4003967CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		52EAABC82C1069D4003967CC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		52EAABCA2C1069D4003967CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52811B792C1ADEBF0054CB01 /* MacDownloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacDownloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		52811B7B2C1ADEBF0054CB01 /* MacDownloaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDownloaderApp.swift; sourceTree = "<group>"; };
+		52811B7D2C1ADEBF0054CB01 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		52811B822C1ADEC10054CB01 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		52811B842C1ADEC10054CB01 /* MacDownloader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacDownloader.entitlements; sourceTree = "<group>"; };
+		52D4CA2D2C14F41D00BE37C3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		52D4CA2F2C14F41D00BE37C3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +63,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		52EAABBA2C1069D0003967CC /* Frameworks */ = {
+		52811B762C1ADEBF0054CB01 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -67,7 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				526A972A2C065CF300130496 /* PrimeFinderiOS */,
-				52EAABBE2C1069D0003967CC /* MyNotes */,
+				52811B7A2C1ADEBF0054CB01 /* MacDownloader */,
+				52D4CA2C2C14F41D00BE37C3 /* Frameworks */,
 				52375EF12BFA80CE00BE2693 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -76,7 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				526A97292C065CF300130496 /* PrimeFinderiOS.app */,
-				52EAABBD2C1069D0003967CC /* MyNotes.app */,
+				52811B792C1ADEBF0054CB01 /* MacDownloader.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +98,6 @@
 				5267AF632C091871006318FD /* PrimeFinderiOS.entitlements */,
 				52375F042BFA812700BE2693 /* PrimeModel.swift */,
 				5267AF642C091BC8006318FD /* DownloadModel.swift */,
-				526448892C0B94FC00AB53CC /* Model.xcdatamodeld */,
 				52375EF52BFA80CE00BE2693 /* ContentView.swift */,
 				52375F022BFA810300BE2693 /* PrimesView.swift */,
 				526A97232C050F3400130496 /* DownloadView.swift */,
@@ -107,25 +117,32 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		52EAABBE2C1069D0003967CC /* MyNotes */ = {
+		52811B7A2C1ADEBF0054CB01 /* MacDownloader */ = {
 			isa = PBXGroup;
 			children = (
-				52EAABBF2C1069D0003967CC /* MyNotesApp.swift */,
-				52EAABC12C1069D0003967CC /* ContentView.swift */,
-				52EAABC32C1069D0003967CC /* Item.swift */,
-				52EAABC52C1069D4003967CC /* Assets.xcassets */,
-				52EAABCA2C1069D4003967CC /* Info.plist */,
-				52EAABC72C1069D4003967CC /* Preview Content */,
+				52811B7B2C1ADEBF0054CB01 /* MacDownloaderApp.swift */,
+				52811B7D2C1ADEBF0054CB01 /* ContentView.swift */,
+				52811B842C1ADEC10054CB01 /* MacDownloader.entitlements */,
+				52811B812C1ADEC10054CB01 /* Preview Content */,
 			);
-			path = MyNotes;
+			path = MacDownloader;
 			sourceTree = "<group>";
 		};
-		52EAABC72C1069D4003967CC /* Preview Content */ = {
+		52811B812C1ADEC10054CB01 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				52EAABC82C1069D4003967CC /* Preview Assets.xcassets */,
+				52811B822C1ADEC10054CB01 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		52D4CA2C2C14F41D00BE37C3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				52D4CA2D2C14F41D00BE37C3 /* WidgetKit.framework */,
+				52D4CA2F2C14F41D00BE37C3 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +155,7 @@
 				526A97252C065CF300130496 /* Sources */,
 				526A97262C065CF300130496 /* Frameworks */,
 				526A97272C065CF300130496 /* Resources */,
+				52D4CA442C14F42400BE37C3 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -148,21 +166,21 @@
 			productReference = 526A97292C065CF300130496 /* PrimeFinderiOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		52EAABBC2C1069D0003967CC /* MyNotes */ = {
+		52811B782C1ADEBF0054CB01 /* MacDownloader */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 52EAABCD2C1069D4003967CC /* Build configuration list for PBXNativeTarget "MyNotes" */;
+			buildConfigurationList = 52811B852C1ADEC10054CB01 /* Build configuration list for PBXNativeTarget "MacDownloader" */;
 			buildPhases = (
-				52EAABB92C1069D0003967CC /* Sources */,
-				52EAABBA2C1069D0003967CC /* Frameworks */,
-				52EAABBB2C1069D0003967CC /* Resources */,
+				52811B752C1ADEBF0054CB01 /* Sources */,
+				52811B762C1ADEBF0054CB01 /* Frameworks */,
+				52811B772C1ADEBF0054CB01 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = MyNotes;
-			productName = MyNotes;
-			productReference = 52EAABBD2C1069D0003967CC /* MyNotes.app */;
+			name = MacDownloader;
+			productName = MacDownloader;
+			productReference = 52811B792C1ADEBF0054CB01 /* MacDownloader.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -172,14 +190,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1530;
+				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					526A97282C065CF300130496 = {
 						CreatedOnToolsVersion = 15.3;
 					};
-					52EAABBC2C1069D0003967CC = {
-						CreatedOnToolsVersion = 15.3;
+					52811B782C1ADEBF0054CB01 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
@@ -197,7 +215,7 @@
 			projectRoot = "";
 			targets = (
 				526A97282C065CF300130496 /* PrimeFinderiOS */,
-				52EAABBC2C1069D0003967CC /* MyNotes */,
+				52811B782C1ADEBF0054CB01 /* MacDownloader */,
 			);
 		};
 /* End PBXProject section */
@@ -212,12 +230,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		52EAABBB2C1069D0003967CC /* Resources */ = {
+		52811B772C1ADEBF0054CB01 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52EAABC92C1069D4003967CC /* Preview Assets.xcassets in Resources */,
-				52EAABC62C1069D4003967CC /* Assets.xcassets in Resources */,
+				52811B832C1ADEC10054CB01 /* Preview Assets.xcassets in Resources */,
+				52811B882C1B4BD00054CB01 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,20 +249,18 @@
 				526A973A2C065E3300130496 /* PrimeModel.swift in Sources */,
 				526A97372C065D2100130496 /* ContentView.swift in Sources */,
 				526A97382C065D2100130496 /* DownloadView.swift in Sources */,
-				5264488B2C0B94FC00AB53CC /* Model.xcdatamodeld in Sources */,
 				526A97392C065D2100130496 /* PrimesView.swift in Sources */,
 				526A972C2C065CF300130496 /* PrimeFinderiOSApp.swift in Sources */,
 				5267AF652C091BC8006318FD /* DownloadModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		52EAABB92C1069D0003967CC /* Sources */ = {
+		52811B752C1ADEBF0054CB01 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52EAABC22C1069D0003967CC /* ContentView.swift in Sources */,
-				52EAABC42C1069D0003967CC /* Item.swift in Sources */,
-				52EAABC02C1069D0003967CC /* MyNotesApp.swift in Sources */,
+				52811B7E2C1ADEBF0054CB01 /* ContentView.swift in Sources */,
+				52811B7C2C1ADEBF0054CB01 /* MacDownloaderApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +391,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PrimeFinderiOS/PrimeFinderiOS.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PrimeFinderiOS/Preview Content\"";
@@ -400,12 +417,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -415,6 +432,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = PrimeFinderiOS/PrimeFinderiOS.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PrimeFinderiOS/Preview Content\"";
@@ -440,80 +458,69 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		52EAABCB2C1069D4003967CC /* Debug */ = {
+		52811B862C1ADEC10054CB01 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MacDownloader/MacDownloader.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyNotes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"MacDownloader/Preview Content\"";
 				DEVELOPMENT_TEAM = JB6L7NV56S;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MyNotes/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.TerenceNdabereye.MyNotes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TerenceNdabereye.MacDownloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		52EAABCC2C1069D4003967CC /* Release */ = {
+		52811B872C1ADEC10054CB01 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MacDownloader/MacDownloader.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyNotes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"MacDownloader/Preview Content\"";
 				DEVELOPMENT_TEAM = JB6L7NV56S;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MyNotes/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.TerenceNdabereye.MyNotes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TerenceNdabereye.MacDownloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -538,30 +545,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		52EAABCD2C1069D4003967CC /* Build configuration list for PBXNativeTarget "MyNotes" */ = {
+		52811B852C1ADEC10054CB01 /* Build configuration list for PBXNativeTarget "MacDownloader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				52EAABCB2C1069D4003967CC /* Debug */,
-				52EAABCC2C1069D4003967CC /* Release */,
+				52811B862C1ADEC10054CB01 /* Debug */,
+				52811B872C1ADEC10054CB01 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		526448892C0B94FC00AB53CC /* Model.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				5264488A2C0B94FC00AB53CC /* Model.xcdatamodel */,
-			);
-			currentVersion = 5264488A2C0B94FC00AB53CC /* Model.xcdatamodel */;
-			name = Model.xcdatamodeld;
-			path = /Users/terencendabereye/code/xcodeProjects/PrimeFinder/PrimeFinderiOS/Model.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 52375EE82BFA80CE00BE2693 /* Project object */;
 }
