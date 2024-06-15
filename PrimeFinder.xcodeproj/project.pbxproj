@@ -3,18 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5267AF652C091BC8006318FD /* DownloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5267AF642C091BC8006318FD /* DownloadModel.swift */; };
 		526A972C2C065CF300130496 /* PrimeFinderiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526A972B2C065CF300130496 /* PrimeFinderiOSApp.swift */; };
 		526A97302C065CF700130496 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 526A972F2C065CF700130496 /* Assets.xcassets */; };
 		526A97332C065CF700130496 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 526A97322C065CF700130496 /* Preview Assets.xcassets */; };
-		526A97372C065D2100130496 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52375EF52BFA80CE00BE2693 /* ContentView.swift */; };
-		526A97382C065D2100130496 /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526A97232C050F3400130496 /* DownloadView.swift */; };
-		526A97392C065D2100130496 /* PrimesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52375F022BFA810300BE2693 /* PrimesView.swift */; };
-		526A973A2C065E3300130496 /* PrimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52375F042BFA812700BE2693 /* PrimeModel.swift */; };
 		52811B7C2C1ADEBF0054CB01 /* MacDownloaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52811B7B2C1ADEBF0054CB01 /* MacDownloaderApp.swift */; };
 		52811B7E2C1ADEBF0054CB01 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52811B7D2C1ADEBF0054CB01 /* ContentView.swift */; };
 		52811B832C1ADEC10054CB01 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52811B822C1ADEC10054CB01 /* Preview Assets.xcassets */; };
@@ -35,13 +30,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		52375EF52BFA80CE00BE2693 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		52375F022BFA810300BE2693 /* PrimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimesView.swift; sourceTree = "<group>"; };
-		52375F042BFA812700BE2693 /* PrimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimeModel.swift; sourceTree = "<group>"; };
 		52572A7D2C07C12C0002D16C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5267AF632C091871006318FD /* PrimeFinderiOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimeFinderiOS.entitlements; sourceTree = "<group>"; };
-		5267AF642C091BC8006318FD /* DownloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadModel.swift; sourceTree = "<group>"; };
-		526A97232C050F3400130496 /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
 		526A97292C065CF300130496 /* PrimeFinderiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrimeFinderiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		526A972B2C065CF300130496 /* PrimeFinderiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimeFinderiOSApp.swift; sourceTree = "<group>"; };
 		526A972F2C065CF700130496 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -54,6 +44,31 @@
 		52D4CA2D2C14F41D00BE37C3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		52D4CA2F2C14F41D00BE37C3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		52811B8A2C1C23EF0054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DownloadModel.swift,
+				PrimeModel.swift,
+			);
+			target = 526A97282C065CF300130496 /* PrimeFinderiOS */;
+		};
+		52811B8C2C1C23F80054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ContentView.swift,
+				DownloadView.swift,
+				PrimesView.swift,
+			);
+			target = 526A97282C065CF300130496 /* PrimeFinderiOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		52811B892C1C23E70054CB01 /* Model */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (52811B8A2C1C23EF0054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Model; sourceTree = "<group>"; };
+		52811B8B2C1C23F70054CB01 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (52811B8C2C1C23F80054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		526A97262C065CF300130496 /* Frameworks */ = {
@@ -96,13 +111,10 @@
 			isa = PBXGroup;
 			children = (
 				5267AF632C091871006318FD /* PrimeFinderiOS.entitlements */,
-				52375F042BFA812700BE2693 /* PrimeModel.swift */,
-				5267AF642C091BC8006318FD /* DownloadModel.swift */,
-				52375EF52BFA80CE00BE2693 /* ContentView.swift */,
-				52375F022BFA810300BE2693 /* PrimesView.swift */,
-				526A97232C050F3400130496 /* DownloadView.swift */,
-				52572A7D2C07C12C0002D16C /* Info.plist */,
 				526A972B2C065CF300130496 /* PrimeFinderiOSApp.swift */,
+				52811B892C1C23E70054CB01 /* Model */,
+				52811B8B2C1C23F70054CB01 /* Views */,
+				52572A7D2C07C12C0002D16C /* Info.plist */,
 				526A972F2C065CF700130496 /* Assets.xcassets */,
 				526A97312C065CF700130496 /* Preview Content */,
 			);
@@ -246,12 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				526A973A2C065E3300130496 /* PrimeModel.swift in Sources */,
-				526A97372C065D2100130496 /* ContentView.swift in Sources */,
-				526A97382C065D2100130496 /* DownloadView.swift in Sources */,
-				526A97392C065D2100130496 /* PrimesView.swift in Sources */,
 				526A972C2C065CF300130496 /* PrimeFinderiOSApp.swift in Sources */,
-				5267AF652C091BC8006318FD /* DownloadModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

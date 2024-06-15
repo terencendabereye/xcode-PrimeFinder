@@ -27,25 +27,20 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
     }
     
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: (any Error)?) {
-        let _timeoutError  = NSURLErrorTimedOut
-        let cancelError = NSURLErrorCancelled
-        
         self.downloadTask.setError(error)
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        DispatchQueue.main.async {
-            let oldProgress = self.downloadTask.progress
-            let newProgress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-            
+        let oldProgress = self.downloadTask.progress
+        let newProgress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        
+        if newProgress-oldProgress >= (0.1/100.0) {
             self.downloadTask.progress = newProgress
-            
-            if newProgress-oldProgress >= 0.1 {
-                self.downloadTask.progressDidChangeSignificantly()
-            }
-            
         }
         
+        if newProgress-oldProgress >= (10.0/100.0) { // 10% change
+            self.downloadTask.progressDidChangeSignificantly()
+        }
     }
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         //MARK: Save
@@ -70,10 +65,10 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
             return
         }
         
-        
         self.downloadTask.downloadDidFinish()
 
     }
+    
     
     func moveFileWithUniqueName(at sourceURL: URL, to destinationURL: URL) throws {
         let fileManager = FileManager.default
@@ -95,9 +90,10 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
     
 }
 
-//@Model
-@Observable
+@Model
 class DownloadTask:Identifiable {
+    
+    
     public enum DownloadState: Codable {
         case notStarted
         case downloading
@@ -112,11 +108,13 @@ class DownloadTask:Identifiable {
     var name: String = "untitled"
     var source: URL?
     var savedURL: URL?
+    var order: Int = 0
     @Transient
     var error: (any Error)?
     var resumable: Bool = false
     var allowBackground: Bool = true
     var progress: Double = 0
+    @Transient
     var busy: Bool = false
     var state: DownloadState = DownloadState.notStarted
     @Transient
@@ -130,7 +128,7 @@ class DownloadTask:Identifiable {
     @Transient
     var urlSession: URLSession? = nil
     
-    init(id: UUID = UUID(), name: String = "untitled_download", source: URL? = nil, savedURL: URL? = nil, error: (any Error)? = nil, resumable: Bool = true, buffer: Data = Data(), progress: Double = 0, urlResponse: URLResponse? = nil, busy: Bool = false, state: DownloadState = .notStarted, downloadTask: URLSessionDownloadTask? = nil, downloadTaskDelegate: DownloadTaskDelegate? = nil, urlSession: URLSession? = nil) {
+    init(id: UUID = UUID(), name: String = "untitled_download", source: URL? = nil, savedURL: URL? = nil, error: (any Error)? = nil, resumable: Bool = true, buffer: Data = Data(), progress: Double = 0, order: Int = 0,  urlResponse: URLResponse? = nil, busy: Bool = false, state: DownloadState = .notStarted, downloadTask: URLSessionDownloadTask? = nil, downloadTaskDelegate: DownloadTaskDelegate? = nil, urlSession: URLSession? = nil) {
         self.id = id
         self.name = name
         self.source = source
@@ -166,6 +164,8 @@ class DownloadTask:Identifiable {
     }
     
     func downloadDidFinish() {
+        self.buffer.removeAll(keepingCapacity: false)
+        
         //send notification
         let content = UNMutableNotificationContent()
         content.title = "Download Complete"
@@ -207,19 +207,30 @@ class DownloadTask:Identifiable {
         }
     }
     func run() {
+        // If app closed erronoeously,
+        // persistent states may be invalid.
+        // Therefore if download is requested when buffer is empty,
+        // reset state
+        if self.buffer.isEmpty {
+            self.state = .notStarted
+        }
+        
         if downloadTaskDelegate == nil {
             downloadTaskDelegate = DownloadTaskDelegate(downloadTask: self)
         }
         if urlSession == nil {
-            urlSession = URLSession(configuration: .default, delegate: self.downloadTaskDelegate, delegateQueue: nil)
+            // delegate should run on main queue; so keep delegate functions quick!
+            // nil delegate queue causes serious hangs and crashes
+            urlSession = URLSession(configuration: .default, delegate: self.downloadTaskDelegate, delegateQueue: .current)
+            
         }
         guard let source = self.source else { print("nil sourceURL"); return }
         
         guard let urlSession = urlSession else {return}
         
-        if resumable && state == .paused  {
+        if resumable && state == .paused  { // resume from pause
             downloadTask = urlSession.downloadTask(withResumeData: buffer)
-        } else {
+        } else { // start new downloads
             downloadTask = urlSession.downloadTask(with: source)
             buffer.removeAll()
         }
@@ -228,14 +239,26 @@ class DownloadTask:Identifiable {
             self.busy = true
             self.state = .downloading
             downloadTask.resume()
-            requestLiveActivity()
+//            requestLiveActivity()
+            self.progress = 0.0
         }
 //        self.downloadTask = downloadTask
     }
     /// **Live activities removed**
+    @available(*, deprecated)
     func requestLiveActivity() {
         // begin live activity
     }
    
+}
+
+public func clamp<T: Comparable>(_ input: T, min: T, max: T) -> T{
+    if (input < min) {
+        return min
+    } else if input > max {
+        return max
+    } else {
+        return input
+    }
 }
 

@@ -35,7 +35,7 @@ struct PrimesView: View {
                     
                     HStack {
                         Button("Run") {
-                            cancellableTask = Task.detached {
+                            cancellableTask = Task {
                                 focusField = false
                                 results.busy = true
                                 results.workingMax = maxPrime

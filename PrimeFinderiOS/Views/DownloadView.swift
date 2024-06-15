@@ -11,20 +11,44 @@ import SwiftData
 struct DownloadView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var modelContext
-    @State var downloads: [DownloadTask] = [
-        .init(name: "sample", source: URL(string: "https://example.com"))
-    ]
+    @Query(sort: \DownloadTask.order) var downloads: [DownloadTask]
     @State var isSheetPresented = false
     
     
     var body: some View {
         NavigationStack {
+            //            @Bindable var downloads = downloadArray.downloads
             VStack{
-                if !downloads.isEmpty{
-                    List($downloads, editActions: [.all]) { download in
-                        NavigationLink {
-                            EditDownloadItemView(download: download)
-                        } label: {                            DownloadItemView(download: download.wrappedValue)
+                if !downloads.isEmpty {
+                    List{
+                        ForEach(downloads){
+                            download in
+                            @Bindable var download = download
+                            NavigationLink {
+                                EditDownloadItemView(download: download)
+                            } label: {
+                                DownloadItemView(download: download)
+                            }
+                        }
+                        .onMove(perform: { from, to in
+                            var tmp = downloads.sorted(by: {$0.order>=$1.order})
+                            tmp.move(fromOffsets: from, toOffset: to)
+                            for (i,v) in tmp.enumerated() {
+                                v.order = i
+                            }
+                            try? modelContext.save()
+                        })
+                        .onDelete { indices in
+                            for v in indices {
+                                let deleteTarget = downloads[v]
+                                deleteTarget.delete()
+                                modelContext.delete(deleteTarget)
+                                do {
+                                    try modelContext.save()
+                                } catch {
+                                    print("Failed to save")
+                                }
+                            }
                         }
                     }
                 } else {
@@ -34,20 +58,22 @@ struct DownloadView: View {
                         Text("Your downloads will go here")
                     }, actions: {
                         Button("Add download", systemImage: "plus") {
-                            isSheetPresented = true
+                            addNewDownload()
                         }
                     })
                 }
             }
             .navigationTitle("Downloads")
             .toolbar {
+                ToolbarItem {
+                    EditButton()
+                }
                 ToolbarItem(placement: .automatic) {
                     Button("Add Download", systemImage: "plus") {
-                        // add item
-                        isSheetPresented = true
+                        addNewDownload()
                     }
                     .sheet(isPresented: $isSheetPresented, content: {
-                        NewDownloadView(downloads: $downloads)
+                        NewDownloadView(newDownloadTask: DownloadTask())
                     })
                 }
                 ToolbarItem(placement: .keyboard) {
@@ -57,6 +83,9 @@ struct DownloadView: View {
                 }
             }
         }
+    }
+    private func addNewDownload() {
+        isSheetPresented = true
     }
 }
 
@@ -70,11 +99,13 @@ struct NewDownloadView: View {
     }
     
     @Environment(\.dismiss) var dismiss
-    @Binding var downloads: [DownloadTask]
+    @Environment(\.modelContext) var modelContext
+    @Bindable var newDownloadTask: DownloadTask
     @State var source: URL?
     @State var name: String = ""
     @State var resumable: Bool = true
     @State var allowBackground: Bool = true
+    @State var startImmediately: Bool = true
     @State var sourceString: String = ""
     @FocusState var focusField: FocuseField?
     
@@ -108,6 +139,7 @@ struct NewDownloadView: View {
                     
                     Toggle("Resumable", isOn: $resumable)
                     Toggle("Background", isOn: $allowBackground)
+                    Toggle("Start Immediately", isOn: $startImmediately)
                     Button("Confirm", action: handleNewDownload)
                         .buttonStyle(PlainButtonStyle())
                         .foregroundStyle(.tint)
@@ -150,16 +182,23 @@ struct NewDownloadView: View {
             print("Failed to make URL from \(sourceString)")
             return
         }
-        let newDownloadTask = DownloadTask()
+//        let newDownloadTask = DownloadTask()
         newDownloadTask.name = name
 
         newDownloadTask.resumable = resumable
         newDownloadTask.source = source
         
-        newDownloadTask.run()
+        modelContext.insert(newDownloadTask)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save")
+        }
         
+        if startImmediately {
+            newDownloadTask.run()
+        }
         
-        downloads.append(newDownloadTask)
         dismiss()
     }
 }
@@ -169,6 +208,7 @@ struct NewDownloadView: View {
 struct DownloadItemView: View {
     
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.modelContext) var modelContext
     @Bindable var download: DownloadTask
     @State var showAlert: Bool = false
     @State var mbs: Double = 0
@@ -179,7 +219,7 @@ struct DownloadItemView: View {
     
     var body: some View {
         HStack {
-            Gauge(value: download.progress, label: {
+            Gauge(value: clamp(download.progress, min: 0.0, max: 1.0), label: {
                 switch download.state {
                 case .downloading:
                     let bytesExpected = (download.downloadTask?.countOfBytesExpectedToReceive ?? 0) / 1_048_576
@@ -216,19 +256,11 @@ struct DownloadItemView: View {
                             showAlert.toggle()
                         }
                 default:
-                    if #available(iOS 18.0, *) {
-                        Image(systemName: "ellipsis")
-                            .symbolRenderingMode(.monochrome)
-                            .scaledToFill()
-                            .contentTransition(.symbolEffect(.replace.byLayer.downUp))
-                            .symbolEffect(.wiggle.up, options: .speed(0.5).repeat(.periodic(delay: 0.4)))
-                    } else {
-                        Image(systemName: "ellipsis")
-                            .symbolRenderingMode(.monochrome)
-                            .scaledToFill()
-                            .contentTransition(.symbolEffect(.replace.byLayer.downUp))
-                            .symbolEffect(.variableColor.reversing.iterative, options: .speed(0.5))
-                    }
+                    Image(systemName: "ellipsis")
+                        .symbolRenderingMode(.monochrome)
+                        .scaledToFill()
+                        .contentTransition(.symbolEffect(.replace.byLayer.downUp))
+                        .symbolEffect(.variableColor.reversing.iterative, options: .speed(0.5))
                 }
             })
             .gaugeStyle(.accessoryCircularCapacity)
@@ -299,9 +331,6 @@ struct DownloadItemView: View {
             
         }
         .contextMenu(menuItems: {
-//                                Button("Quicklook", systemImage: "eye") {
-//                                    isQuicklookPresented = true
-//                                }
             Button("Copy download address", systemImage: "doc.on.doc") {
                 let pasteboard = UIPasteboard.general
                 guard let url = download.source?.absoluteString else {return}
@@ -313,10 +342,11 @@ struct DownloadItemView: View {
                     goToURL = fileURL
                     isSavePresented = true
                 }
+                ShareLink(item: fileURL)
             }
             Button("Delete", systemImage: "trash", role: .destructive) {
+                modelContext.delete(download)
                 download.delete()
-//                download.removeAll(where: {$0.id == download.id})
             }
             Button("Cancel", systemImage: "xmark", role: .cancel) {
                 download.cancelDownload()
@@ -330,12 +360,12 @@ struct DownloadItemView: View {
                 print(error)
             }
         })
-        .sensoryFeedback(.success, trigger: download.state)
+        .sensoryFeedback((download.state == .downloading) ? .start : .stop, trigger: download.state)
     }
 }
 
 struct EditDownloadItemView: View {
-    @Binding var download: DownloadTask
+    @Bindable var download: DownloadTask
     var body: some View {
         Form {
             Section{
