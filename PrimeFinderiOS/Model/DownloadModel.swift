@@ -211,6 +211,7 @@ class DownloadTask:Identifiable {
         // persistent states may be invalid.
         // Therefore if download is requested when buffer is empty,
         // reset state
+        //
         if self.buffer.isEmpty {
             self.state = .notStarted
         }
