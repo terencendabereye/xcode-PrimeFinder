@@ -13,10 +13,11 @@ struct DownloadView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \DownloadTask.order) var downloads: [DownloadTask]
     @State var isSheetPresented = false
+    @State private var navigationPath: [DownloadTask] = []
     
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             //            @Bindable var downloads = downloadArray.downloads
             VStack{
                 if !downloads.isEmpty {
@@ -24,9 +25,7 @@ struct DownloadView: View {
                         ForEach(downloads){
                             download in
                             @Bindable var download = download
-                            NavigationLink {
-                                EditDownloadItemView(download: download)
-                            } label: {
+                            NavigationLink(value: download) {
                                 DownloadItemView(download: download)
                             }
                         }
@@ -50,6 +49,9 @@ struct DownloadView: View {
                                 }
                             }
                         }
+                    }
+                    .navigationDestination(for: DownloadTask.self) { downloadTask in
+                        EditDownloadItemView(download: downloadTask)
                     }
                 } else {
                     ContentUnavailableView(label: {
