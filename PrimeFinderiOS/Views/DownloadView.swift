@@ -7,18 +7,16 @@
 
 import SwiftUI
 import SwiftData
+import QuickLook
 
 struct DownloadView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var modelContext
     @Query(sort: \DownloadTask.order) var downloads: [DownloadTask]
     @State var isSheetPresented = false
-    @State private var navigationPath: [DownloadTask] = []
-    
     
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            //            @Bindable var downloads = downloadArray.downloads
+        NavigationStack {
             VStack{
                 if !downloads.isEmpty {
                     List{
@@ -39,10 +37,13 @@ struct DownloadView: View {
                         })
                         .onDelete { indices in
                             for v in indices {
-                                let deleteTarget = downloads[v]
-                                deleteTarget.delete()
-                                modelContext.delete(deleteTarget)
                                 do {
+                                    let deleteTarget = downloads[v]
+                                    if let savedURL = deleteTarget.savedURL {
+                                        try FileManager.default.removeItem(at: savedURL)
+                                    }
+                                    deleteTarget.delete()
+                                    modelContext.delete(deleteTarget)
                                     try modelContext.save()
                                 } catch {
                                     print("Failed to save")
@@ -275,13 +276,14 @@ struct DownloadItemView: View {
                     .frame(alignment: .center)
                     .focused($isFocused)
                     .renameAction($isFocused)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 if let source = download.source {
                     Text("\(source.description)")
                         .foregroundStyle(.tint)
                         .font(.footnote)
                         .tint(.secondary)
                         .lineLimit(1)
-                    
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             Spacer()
@@ -338,15 +340,20 @@ struct DownloadItemView: View {
             }
             if let fileURL = download.savedURL {
                 Button("Save", systemImage: "square.and.arrow.down"){
-                    //TODO: Save
                     goToURL = fileURL
                     isSavePresented = true
                 }
                 ShareLink(item: fileURL)
-            }
-            Button("Delete", systemImage: "trash", role: .destructive) {
-                modelContext.delete(download)
-                download.delete()
+                Button("Delete file", systemImage: "trash", role: .destructive) {
+                    do {
+                        download.cancelDownload()
+                        download.state = .notStarted
+                        download.savedURL = nil
+                        try FileManager.default.removeItem(at: fileURL)
+                    } catch {
+                        print(error)
+                    }
+                }
             }
             Button("Cancel", systemImage: "xmark", role: .cancel) {
                 download.cancelDownload()
@@ -366,6 +373,7 @@ struct DownloadItemView: View {
 
 struct EditDownloadItemView: View {
     @Bindable var download: DownloadTask
+    @State var quickLookURL: URL?
     var body: some View {
         Form {
             Section{
@@ -407,12 +415,20 @@ struct EditDownloadItemView: View {
                             .font(.title)
                     }
                 })
+                .buttonStyle(PlainButtonStyle())
+                .foregroundStyle(.accent)
+                
             }
+
             Section {
                 let bytesExpected = (download.downloadTask?.countOfBytesExpectedToReceive ?? 0) / 1_048_576
                 let currentBytes = download.progress * Double(bytesExpected)
                 
-                ProgressView(value: currentBytes, total: Double(bytesExpected)) {
+                if download.busy {
+                    ProgressView(value: currentBytes, total: Double(bytesExpected)) {
+                        Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
+                    }
+                } else {
                     Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
                 }
                 
@@ -422,9 +438,27 @@ struct EditDownloadItemView: View {
                         Text(download.downloadTask?.error.debugDescription ?? " nil" )
                     }
                 }
-                
             }
-            
+            Section{
+                if download.savedURL != nil {
+                    Button("Show", systemImage: "eye") {
+                        do {
+                            let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                            guard let fileName = download.savedURL?.pathComponents.last else {return}
+                            let contents = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
+                            let found = contents.filter {$0.lastPathComponent == fileName}
+                            guard let found = found.first else {return}
+                            download.savedURL = found
+                            quickLookURL = download.savedURL
+                        } catch {
+                            print(error)
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .foregroundStyle(.accent)
+                    .quickLookPreview($quickLookURL)
+                }
+            }
         }
         .navigationTitle(download.name)
     }
