@@ -218,6 +218,7 @@ struct DownloadItemView: View {
 //    @State var isQuicklookPresented = false
     @State var goToURL: URL?
     @FocusState var isFocused: Bool
+    @State var buttonSymbol: String = "questionmark"
     
     var body: some View {
         HStack {
@@ -295,29 +296,26 @@ struct DownloadItemView: View {
                     download.run()
                 }
             }, label: {
-                switch download.state {
-                case .notStarted:
-                    Image(systemName: "arrow.down.circle.fill")
-                        .font(.title)
-                case .downloading:
-                    Image(systemName: "pause.circle.fill")
-                        .font(.title)
-                case .paused:
-                    Image(systemName: "arrow.down.circle.fill")
-                        .font(.title)
-                case .finished:
-                    Image(systemName: "arrow.down.circle.fill")
-                        .font(.title)
-                case .cancelled:
-                    Image(systemName: "arrow.circlepath")
-                        .font(.title)
-                case .failed:
-                    Image(systemName: "arrow.circlepath")
-                        .font(.title)
-                default:
-                    Image(systemName: "arrow.down.circle.fill")
-                        .font(.title)
-                }
+                Image(systemName: buttonSymbol)
+                    .font(.title)
+                    .task(id: download.state) {
+                        switch download.state {
+                        case .notStarted:
+                            buttonSymbol = "arrow.down.circle.fill"
+                        case .downloading:
+                            buttonSymbol = "pause.circle.fill"
+                        case .paused:
+                            buttonSymbol = "arrow.down.circle.fill"
+                        case .finished:
+                            buttonSymbol = "arrow.down.circle.fill"
+                        case .cancelled:
+                            buttonSymbol = "arrow.circlepath"
+                        case .failed:
+                            buttonSymbol = "arrow.circlepath"
+                        default:
+                            buttonSymbol = "arrow.down.circle.fill"
+                        }
+                    }
             })
             .buttonStyle(PlainButtonStyle())
             .foregroundStyle(.accent)
