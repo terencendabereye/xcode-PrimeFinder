@@ -60,14 +60,22 @@
 				ContentView.swift,
 				DownloadView.swift,
 				PrimesView.swift,
+				WebView.swift,
 			);
 			target = 526A97282C065CF300130496 /* PrimeFinderiOS */;
+		};
+		52BD74842C20B2890061F249 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WebView.swift,
+			);
+			target = 52811B782C1ADEBF0054CB01 /* MacDownloader */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		52811B892C1C23E70054CB01 /* Model */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (52811B8A2C1C23EF0054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Model; sourceTree = "<group>"; };
-		52811B8B2C1C23F70054CB01 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (52811B8C2C1C23F80054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+		52811B8B2C1C23F70054CB01 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (52811B8C2C1C23F80054CB01 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 52BD74842C20B2890061F249 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */

@@ -8,15 +8,17 @@
 import SwiftUI
 import SwiftData
 import QuickLook
+import WebKit
 
 struct DownloadView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var modelContext
     @Query(sort: \DownloadTask.order) var downloads: [DownloadTask]
     @State var isSheetPresented = false
+    @State var navigationPath = NavigationPath()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack{
                 if !downloads.isEmpty {
                     List{
@@ -39,9 +41,6 @@ struct DownloadView: View {
                             for v in indices {
                                 do {
                                     let deleteTarget = downloads[v]
-                                    if let savedURL = deleteTarget.savedURL {
-                                        try FileManager.default.removeItem(at: savedURL)
-                                    }
                                     deleteTarget.delete()
                                     modelContext.delete(deleteTarget)
                                     try modelContext.save()
@@ -52,7 +51,10 @@ struct DownloadView: View {
                         }
                     }
                     .navigationDestination(for: DownloadTask.self) { downloadTask in
-                        EditDownloadItemView(download: downloadTask)
+                        EditDownloadItemView(download: downloadTask, navigationPath: $navigationPath)
+                    }
+                    .navigationDestination(for: WebKitURL.self) { webkitURL in
+                        WebView(url: webkitURL.targetURL)
                     }
                 } else {
                     ContentUnavailableView(label: {
@@ -345,14 +347,7 @@ struct DownloadItemView: View {
                 }
                 ShareLink(item: fileURL)
                 Button("Delete file", systemImage: "trash", role: .destructive) {
-                    do {
-                        download.cancelDownload()
-                        download.state = .notStarted
-                        download.savedURL = nil
-                        try FileManager.default.removeItem(at: fileURL)
-                    } catch {
-                        print(error)
-                    }
+                    download.delete()
                 }
             }
             Button("Cancel", systemImage: "xmark", role: .cancel) {
@@ -374,6 +369,8 @@ struct DownloadItemView: View {
 struct EditDownloadItemView: View {
     @Bindable var download: DownloadTask
     @State var quickLookURL: URL?
+    @Binding var navigationPath: NavigationPath
+    @State var fileSize: Double = 0
     var body: some View {
         Form {
             Section{
@@ -429,7 +426,18 @@ struct EditDownloadItemView: View {
                         Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
                     }
                 } else {
-                    Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
+                    LabeledContent("Size", value: String(format: "%.2f MB", fileSize))
+                        .task {
+                            do {
+                                guard let savedURL = download.savedURL else {return}
+                                let currentPath = try getCurrentURL(oldURL: savedURL)
+                                let attributes = try FileManager.default.attributesOfItem(atPath: currentPath.path())
+                                let bytes = attributes[.size] as! Int
+                                fileSize = Double(bytes) / 1_000_000.0
+                            } catch {
+                                print(error)
+                            }
+                        }
                 }
                 
                 LabeledContent("Debug Error") {
@@ -443,13 +451,17 @@ struct EditDownloadItemView: View {
                 if download.savedURL != nil {
                     Button("Show", systemImage: "eye") {
                         do {
-                            let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-                            guard let fileName = download.savedURL?.pathComponents.last else {return}
-                            let contents = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
-                            let found = contents.filter {$0.lastPathComponent == fileName}
-                            guard let found = found.first else {return}
-                            download.savedURL = found
-                            quickLookURL = download.savedURL
+                            guard let url = download.savedURL else { return }
+                            let pathExtension = url.pathExtension
+//                            print(pathExtension)
+                            let found = try getCurrentURL(oldURL: url)
+                            
+                            if pathExtension == "html" || pathExtension == "htm" {
+                                navigationPath.append(WebKitURL(targetURL: found))
+                            } else {
+                                download.savedURL = found
+                                quickLookURL = download.savedURL
+                            }
                         } catch {
                             print(error)
                         }
@@ -463,3 +475,20 @@ struct EditDownloadItemView: View {
         .navigationTitle(download.name)
     }
 }
+
+struct WebKitURL: Hashable {
+    var targetURL: URL
+}
+func getCurrentURL(oldURL: URL) throws -> URL {
+    enum GetURLError: Error {
+        case DirectoryWasEmpty
+        case FileNotFound
+    }
+    let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+    guard let fileName = oldURL.pathComponents.last else { throw GetURLError.DirectoryWasEmpty }
+    let contents = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
+    let found = contents.filter {$0.lastPathComponent == fileName}
+    guard let found = found.first else { throw GetURLError.FileNotFound }
+    return found
+}
+

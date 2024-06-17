@@ -156,7 +156,11 @@ class DownloadTask:Identifiable {
     func delete() {
         guard let savedURL = self.savedURL else {return}
         do {
-            try FileManager.default.removeItem(at: savedURL)
+            let foundURL = try getCurrentURL(oldURL: savedURL)
+            try FileManager.default.removeItem(at: foundURL)
+            self.cancelDownload()
+            self.state = .notStarted
+            self.savedURL = nil
         } catch {
             print(error)
             return
@@ -164,6 +168,8 @@ class DownloadTask:Identifiable {
     }
     
     func downloadDidFinish() {
+        UIApplication.shared.isIdleTimerDisabled = false
+        
         self.buffer.removeAll(keepingCapacity: false)
         
         //send notification
@@ -185,6 +191,8 @@ class DownloadTask:Identifiable {
 
     
     func cancelDownload() {
+        UIApplication.shared.isIdleTimerDisabled = false
+        self.delete()
         self.busy = false
         self.state = .cancelled
         progress = 0
@@ -193,6 +201,7 @@ class DownloadTask:Identifiable {
     }
     
     func pause() {
+        UIApplication.shared.isIdleTimerDisabled = false
         if resumable{
             busy = false
             state = .paused
@@ -242,6 +251,11 @@ class DownloadTask:Identifiable {
             downloadTask.resume()
 //            requestLiveActivity()
             self.progress = 0.0
+            #if os(iOS)
+            // prevent app from sleeping
+            UIApplication.shared.isIdleTimerDisabled = true
+            #endif
+            
         }
 //        self.downloadTask = downloadTask
     }
