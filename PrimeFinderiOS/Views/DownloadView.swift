@@ -22,34 +22,92 @@ struct DownloadView: View {
             VStack{
                 if !downloads.isEmpty {
                     List{
-                        ForEach(downloads){
-                            download in
-                            @Bindable var download = download
-                            NavigationLink(value: download) {
-                                DownloadItemView(download: download)
-                            }
-                        }
-                        .onMove(perform: { from, to in
-                            var tmp = downloads.sorted(by: {$0.order>=$1.order})
-                            tmp.move(fromOffsets: from, toOffset: to)
-                            for (i,v) in tmp.enumerated() {
-                                v.order = i
-                            }
-                            try? modelContext.save()
-                        })
-                        .onDelete { indices in
-                            for v in indices {
-                                do {
-                                    let deleteTarget = downloads[v]
-                                    deleteTarget.delete()
-                                    modelContext.delete(deleteTarget)
-                                    try modelContext.save()
-                                } catch {
-                                    print("Failed to save")
+                        Group {
+                            // unhidden section
+                            Section {
+                                let shownDownloads = try! downloads.filter(#Predicate<DownloadTask> {item in !item.hidden})
+                                ForEach(shownDownloads){
+                                    download in
+                                    @Bindable var download = download
+                                    NavigationLink(value: download) {
+                                        DownloadItemView(download: download)
+                                    }
+                                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                        Button("Toggle Hide", systemImage: (download.hidden) ? "eye" : "eye.slash") {
+                                            download.hidden.toggle()
+                                        }
+                                        .tint(.orange)
+                                    }
+                                    
+                                }
+                                .onMove(perform: { from, to in
+                                    var tmp = downloads.sorted(by: {$0.order>=$1.order})
+                                    tmp.move(fromOffsets: from, toOffset: to)
+                                    for (i,v) in tmp.enumerated() {
+                                        v.order = i
+                                    }
+                                    try? modelContext.save()
+                                })
+                                .onDelete { indices in
+                                    for v in indices {
+                                        do {
+                                            let deleteTarget = downloads[v]
+                                            deleteTarget.delete()
+                                            deleteTarget.cancelDownload()
+                                            deleteTarget.state = .notStarted
+                                            deleteTarget.savedURL = nil
+                                            modelContext.delete(deleteTarget)
+                                            try modelContext.save()
+                                        } catch {
+                                            print("Failed to save")
+                                        }
+                                    }
                                 }
                             }
+                            DisclosureGroup("Hidden") {
+                                let shownDownloads = try! downloads.filter(#Predicate<DownloadTask> {item in item.hidden})
+                                ForEach(shownDownloads){
+                                    download in
+                                    @Bindable var download = download
+                                    NavigationLink(value: download) {
+                                        DownloadItemView(download: download)
+                                    }
+                                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                        Button("Toggle Hide", systemImage: (download.hidden) ? "eye" : "eye.slash") {
+                                            download.hidden.toggle()
+                                        }
+                                        .tint(.orange)
+                                    }
+                                    
+                                }
+                                .onMove(perform: { from, to in
+                                    var tmp = downloads.sorted(by: {$0.order>=$1.order})
+                                    tmp.move(fromOffsets: from, toOffset: to)
+                                    for (i,v) in tmp.enumerated() {
+                                        v.order = i
+                                    }
+                                    try? modelContext.save()
+                                })
+                                .onDelete { indices in
+                                    for v in indices {
+                                        do {
+                                            let deleteTarget = downloads[v]
+                                            deleteTarget.delete()
+                                            deleteTarget.cancelDownload()
+                                            deleteTarget.state = .notStarted
+                                            deleteTarget.savedURL = nil
+                                            modelContext.delete(deleteTarget)
+                                            try modelContext.save()
+                                        } catch {
+                                            print("Failed to save")
+                                        }
+                                    }
+                                }
+                            }
+                            .disclosureGroupStyle(AutomaticDisclosureGroupStyle())
                         }
                     }
+                    .listStyle(.automatic)
                     .navigationDestination(for: DownloadTask.self) { downloadTask in
                         EditDownloadItemView(download: downloadTask, navigationPath: $navigationPath)
                     }
@@ -70,6 +128,15 @@ struct DownloadView: View {
             }
             .navigationTitle("Downloads")
             .toolbar {
+//                ToolbarItem {
+//                    Button("Color", systemImage: "paintpalette") {
+//                        if Color.accentColor == .yellow {
+//                            Color.accentColor = .blue
+//                        } else {
+//                            Color.accentColor = .yellow
+//                        }
+//                    }
+//                }
                 ToolbarItem {
                     EditButton()
                 }
@@ -95,7 +162,15 @@ struct DownloadView: View {
 }
 
 #Preview {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: DownloadTask.self, configurations: configuration)
     DownloadView()
+        .modelContainer(container)
+        .task {
+            container.mainContext.insert(DownloadTask(name: "Example", source: URL(string: "https://example.com")!))
+            container.mainContext.insert(DownloadTask(name: "Image", source: URL(string: "https://images.pexels.com/photos/25637494/pexels-photo-25637494.jpeg?cs=srgb&dl=pexels-rose-rosen-3423077-25637494.jpg&fm=jpg")!))
+        }
+    
 }
 
 struct NewDownloadView: View {
@@ -147,8 +222,7 @@ struct NewDownloadView: View {
                     Toggle("Start Immediately", isOn: $startImmediately)
                     Button("Confirm", action: handleNewDownload)
                         .buttonStyle(PlainButtonStyle())
-                        .foregroundStyle(.tint)
-                        .tint(.accent)
+                        .foregroundStyle(.accent)
                 } footer: {
                     Text("Swipe down to cancel")
                 }
@@ -188,7 +262,12 @@ struct NewDownloadView: View {
             return
         }
 //        let newDownloadTask = DownloadTask()
-        newDownloadTask.name = name
+        
+        if name.isEmpty {
+            newDownloadTask.name = "untitled"
+        } else {
+            newDownloadTask.name = name
+        }
 
         newDownloadTask.resumable = resumable
         newDownloadTask.source = source
@@ -228,8 +307,8 @@ struct DownloadItemView: View {
             Gauge(value: clamp(download.progress, min: 0.0, max: 1.0), label: {
                 switch download.state {
                 case .downloading:
-                    let bytesExpected = (download.downloadTask?.countOfBytesExpectedToReceive ?? 0) / 1_048_576
-                    Text(String(format: "%.1fMB", download.progress * Double(bytesExpected)))
+                    let bytes = download.downloadTask?.countOfBytesReceived ?? 0
+                    Text(Int64(bytes), format: .byteCount(style: .file))
                         .scaledToFit()
                     //                            .animation(.interpolatingSpring, value: download.progress)
                     //                            .contentTransition(.numericText())
@@ -322,7 +401,11 @@ struct DownloadItemView: View {
                     }
             })
             .buttonStyle(PlainButtonStyle())
+#if targetEnvironment(simulator)
+            .foregroundStyle(.yellow)
+#else
             .foregroundStyle(.accent)
+#endif
             .onChange(of: scenePhase) { oldValue, newValue in
                 if newValue == .background && download.state == .downloading {
                     // app entering background
@@ -348,6 +431,9 @@ struct DownloadItemView: View {
                 ShareLink(item: fileURL)
                 Button("Delete file", systemImage: "trash", role: .destructive) {
                     download.delete()
+                    download.cancelDownload()
+                    download.state = .notStarted
+                    download.savedURL = nil
                 }
             }
             Button("Cancel", systemImage: "xmark", role: .cancel) {
@@ -371,6 +457,7 @@ struct EditDownloadItemView: View {
     @State var quickLookURL: URL?
     @Binding var navigationPath: NavigationPath
     @State var fileSize: Double = 0
+    @State var numOfBytes: Int = 0
     var body: some View {
         Form {
             Section{
@@ -413,7 +500,12 @@ struct EditDownloadItemView: View {
                     }
                 })
                 .buttonStyle(PlainButtonStyle())
+#if targetEnvironment(simulator)
+                .foregroundStyle(.yellow)
+#else
                 .foregroundStyle(.accent)
+#endif
+
                 
             }
 
@@ -426,7 +518,7 @@ struct EditDownloadItemView: View {
                         Text(String(format: "%.1fMB of %.1fMB", Double(currentBytes), Double(bytesExpected)))
                     }
                 } else {
-                    LabeledContent("Size", value: String(format: "%.2f MB", fileSize))
+                    LabeledContent("Size", value: Int64(numOfBytes), format: .byteCount(style: .file))
                         .task {
                             do {
                                 guard let savedURL = download.savedURL else {return}
@@ -434,6 +526,7 @@ struct EditDownloadItemView: View {
                                 let attributes = try FileManager.default.attributesOfItem(atPath: currentPath.path())
                                 let bytes = attributes[.size] as! Int
                                 fileSize = Double(bytes) / 1_000_000.0
+                                numOfBytes = bytes
                             } catch {
                                 print(error)
                             }
@@ -474,21 +567,5 @@ struct EditDownloadItemView: View {
         }
         .navigationTitle(download.name)
     }
-}
-
-struct WebKitURL: Hashable {
-    var targetURL: URL
-}
-func getCurrentURL(oldURL: URL) throws -> URL {
-    enum GetURLError: Error {
-        case DirectoryWasEmpty
-        case FileNotFound
-    }
-    let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-    guard let fileName = oldURL.pathComponents.last else { throw GetURLError.DirectoryWasEmpty }
-    let contents = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
-    let found = contents.filter {$0.lastPathComponent == fileName}
-    guard let found = found.first else { throw GetURLError.FileNotFound }
-    return found
 }
 

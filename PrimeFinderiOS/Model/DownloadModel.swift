@@ -55,10 +55,17 @@ class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
         
 
         do {
+            // delete file if it already exists
+            if self.downloadTask.savedURL != nil {
+                self.downloadTask.delete()
+            }
+            
             guard let suggestedFilename = downloadTask.response?.suggestedFilename else {return}
             let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: self.downloadTask.savedURL, create: false)
             self.downloadTask.savedURL = dir.appending(component: suggestedFilename)
             guard let savedURL = self.downloadTask.savedURL else {return}
+            
+            
             try moveFileWithUniqueName(at: location, to: savedURL)
         } catch {
             self.downloadTask.setError(error)
@@ -114,6 +121,7 @@ class DownloadTask:Identifiable {
     var resumable: Bool = false
     var allowBackground: Bool = true
     var progress: Double = 0
+    var hidden: Bool = false
     @Transient
     var busy: Bool = false
     var state: DownloadState = DownloadState.notStarted
@@ -128,7 +136,7 @@ class DownloadTask:Identifiable {
     @Transient
     var urlSession: URLSession? = nil
     
-    init(id: UUID = UUID(), name: String = "untitled_download", source: URL? = nil, savedURL: URL? = nil, error: (any Error)? = nil, resumable: Bool = true, buffer: Data = Data(), progress: Double = 0, order: Int = 0,  urlResponse: URLResponse? = nil, busy: Bool = false, state: DownloadState = .notStarted, downloadTask: URLSessionDownloadTask? = nil, downloadTaskDelegate: DownloadTaskDelegate? = nil, urlSession: URLSession? = nil) {
+    init(id: UUID = UUID(), name: String = "untitled_download", source: URL? = nil, savedURL: URL? = nil, error: (any Error)? = nil, resumable: Bool = true, buffer: Data = Data(), progress: Double = 0, order: Int = 0,  urlResponse: URLResponse? = nil, busy: Bool = false, hidden: Bool = false, state: DownloadState = .notStarted, downloadTask: URLSessionDownloadTask? = nil, downloadTaskDelegate: DownloadTaskDelegate? = nil, urlSession: URLSession? = nil) {
         self.id = id
         self.name = name
         self.source = source
@@ -158,9 +166,6 @@ class DownloadTask:Identifiable {
         do {
             let foundURL = try getCurrentURL(oldURL: savedURL)
             try FileManager.default.removeItem(at: foundURL)
-            self.cancelDownload()
-            self.state = .notStarted
-            self.savedURL = nil
         } catch {
             print(error)
             return
@@ -275,5 +280,21 @@ public func clamp<T: Comparable>(_ input: T, min: T, max: T) -> T{
     } else {
         return input
     }
+}
+
+struct WebKitURL: Hashable {
+    var targetURL: URL
+}
+func getCurrentURL(oldURL: URL) throws -> URL {
+    enum GetURLError: Error {
+        case DirectoryWasEmpty
+        case FileNotFound
+    }
+    let dir = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+    guard let fileName = oldURL.pathComponents.last else { throw GetURLError.DirectoryWasEmpty }
+    let contents = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
+    let found = contents.filter {$0.lastPathComponent == fileName}
+    guard let found = found.first else { throw GetURLError.FileNotFound }
+    return found
 }
 
